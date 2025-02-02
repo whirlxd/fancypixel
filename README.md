@@ -6,7 +6,7 @@ Fancy Pixel is a simple webapp where people can add fancy ass text so to speak o
 ## Getting Started
  to run it locally simply copy the html file and view it in your browser
 </br>
- to see it in action [click here]()
+ to see it in action [click here](https://whirlxd.github.io/fancypixel/)
 
 ### Tech used and attributions -
  > basic stuff since i was trying to work with canvas 
