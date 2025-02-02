@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fancy Pixel - Overlay beautiful text on your images</title>
+  <style>
+    body {
+      background: #000000;
+      color: #FFFFFF;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 0;
+    }
+    .header {
+      align-items: center;
+      background: #000000;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      height: 60px;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: fixed;
+      top: 0;
+      width: calc(100% - 48px);
+      z-index: 100;
+    }
+    .logo {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+
+    .main-container {
+      display: flex;
+      gap: 24px;
+      margin-top: 60px;
+      min-height: calc(100vh - 60px);
+      padding: 24px;
+    }
+
+  
+    #editorContainer {
+      background: #111111;
+      border: 1px dashed rgba(255,255,255,0.2);
+      border-radius: 8px;
+      flex: 1;
+      min-height: 400px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .upload-placeholder {
+      align-items: center;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+      justify-content: center;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    .upload-icon {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      height: 48px;
+      padding: 12px;
+      width: 48px;
+    }
+
+    /* Controls panel styling */
+    #controls {
+      background: #111111;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 320px;
+      padding: 24px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .control-group label {
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      background: #222222;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 12px;
+      width: 100%;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-button {
+      background: #333333;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .file-upload-button:hover {
+      background: #444444;
+    }
+    .color-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .color-option {
+      border: 2px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      height: 24px;
+      padding: 2px;
+      width: 24px;
+    }
+
+    .color-option.active {
+      border-color: #FFFFFF;
+    }
+    .text-effects {
+      display: flex;
+      gap: 8px;
+    }
+
+    .effect-button {
+      background: #222222;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+
+    .effect-button.active {
+      background: #444444;
+      border-color: #FFFFFF;
+    }
+
+    /* Background style options */
+    .background-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .background-option {
+      background: #222222;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      flex: 1;
+      font-size: 14px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    .background-option.active {
+      background: #444444;
+      border-color: #FFFFFF;
+    }
+
+
+    #draggableText {
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      color: #fff;
+      cursor: move;
+      font-family: inherit;
+      padding: 8px 12px;
+      position: absolute;
+      user-select: none;
+    }
+
+    #draggableText.hidden {
+      display: none;
+    }
+
+
+    @media (max-width: 1024px) {
+      .main-container {
+        flex-direction: column;
+      }
+      
+      #controls {
+        min-width: unset;
+        width: 100%;
+      }
+    }
+
+    button {
+      background: #333333;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #444444;
+    }
+
+
+    input:focus,
+    select:focus,
+    button:focus {
+      border-color: #FFFFFF;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+
+  Fancy Pixel
+    </div>
+    <div class="header-actions">
+      <button id="downloadButton">Download</button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <div id="editorContainer">
+      <div class="upload-placeholder">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+        </div>
+        <p>Drag and drop your image here or</p>
+        <label class="file-upload-button" for="imageLoader">
+          Browse Files
+        </label>
+      </div>
+      <img id="uploadedImage" src="placeholder" alt="uploaded" style="display: none; max-width: 100%; height: auto;">
+      <div id="draggableText" class="hidden">Your Text</div>
+    </div>
+    
+    <div id="controls" style="display:none;">
+      <div class="control-group">
+        <label for="textInput">Your Fancy Text</label>
+        <input type="text" id="textInput" placeholder="Enter your text" value="Your Text">
+      </div>
+      
+      <div class="control-group">
+        <label for="fontInput">Font Family</label>
+        <select id="fontInput">
+          <option value="Arial">Arial</option>
+          <option value="Helvetica">Helvetica</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Courier">Courier</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Palatino">Palatino</option>
+          <option value="Garamond">Garamond</option>
+          <option value="Bookman">Bookman</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+          <option value="Trebuchet MS">Trebuchet MS</option>
+          <option value="Arial Black">Arial Black</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label for="customFont">Custom Font</label>
+        <input type="text" id="customFont" placeholder="Enter custom font name">
+      </div>
+      
+      <div class="control-group">
+        <label for="fontSize">Font Size</label>
+        <input type="number" id="fontSize" min="10" max="150" value="30">
+      </div>
+      
+      <div class="control-group">
+        <label>Text Color</label>
+        <div class="color-options">
+          <div class="color-option active" style="background-color: #ffffff;" data-color="#ffffff"></div>
+          <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
+          <div class="color-option" style="background-color: #808080;" data-color="#808080"></div>
+          <div class="color-option" style="background-color: #c0c0c0;" data-color="#c0c0c0"></div>
+          <input type="color" id="customColor" value="#ffffff">
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label>Text Effects</label>
+        <div class="text-effects">
+          <button class="effect-button" data-effect="bold">B</button>
+          <button class="effect-button" data-effect="italic">I</button>
+          <button class="effect-button" data-effect="underline">U</button>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label>Background Style</label>
+        <div class="background-options">
+          <button class="background-option active" data-bg="none">None</button>
+          <button class="background-option" data-bg="solid">Solid</button>
+          <button class="background-option" data-bg="gradient">Gradient</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <input type="file" id="imageLoader" accept="image/*" style="display: none;">
+  
+  <script>
+    const imageLoader = document.getElementById('imageLoader');
+    const editorContainer = document.getElementById('editorContainer');
+    const uploadedImage = document.getElementById('uploadedImage');
+    const draggableText = document.getElementById('draggableText');
+    const controls = document.getElementById('controls');
+    const textInput = document.getElementById('textInput');
+    const fontInput = document.getElementById('fontInput');
+    const customFont = document.getElementById('customFont');
+    const fontSizeInput = document.getElementById('fontSize');
+    const colorOptions = document.querySelectorAll('.color-option');
+    const customColor = document.getElementById('customColor');
+    const effectButtons = document.querySelectorAll('.effect-button');
+    const backgroundOptions = document.querySelectorAll('.background-option');
+    const downloadButton = document.getElementById('downloadButton');
+    let imgOgWidth, imgOgHieght;
+    imageLoader.addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        uploadedImage.src = event.target.result;
+        uploadedImage.style.display = 'block';
+        document.querySelector('.upload-placeholder').style.display = 'none';
+      }
+      reader.readAsDataURL(e.target.files[0]);
+    });
+    uploadedImage.addEventListener('load', function() {
+      imgOgWidth = uploadedImage.naturalWidth;
+      imgOgHieght = uploadedImage.naturalHeight;
+
+      editorContainer.style.width = uploadedImage.width + 'px';
+      editorContainer.style.height = uploadedImage.height + 'px';
+      
+      
+      draggableText.classList.remove('hidden');
+      controls.style.display = 'flex';
+    });
+    
+    
+    function updateTextStyle() {
+      draggableText.textContent = textInput.value;
+      draggableText.style.fontFamily = customFont.value || fontInput.value;
+      draggableText.style.fontSize = fontSizeInput.value + 'px';
+      
+   
+      draggableText.style.fontWeight = effectButtons[0].classList.contains('active') ? 'bold' : 'normal';
+      draggableText.style.fontStyle = effectButtons[1].classList.contains('active') ? 'italic' : 'normal';
+      draggableText.style.textDecoration = effectButtons[2].classList.contains('active') ? 'underline' : 'none';
+      
+ 
+      const activeBg = document.querySelector('.background-option.active').dataset.bg;
+      switch (activeBg) {
+        case 'none':
+          draggableText.style.background = 'transparent';
+          break;
+        case 'solid':
+          draggableText.style.background = 'rgba(0, 0, 0, 0.7)';
+          break;
+        case 'gradient':
+          draggableText.style.background = 'linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(64, 64, 64, 0.7))';
+          break;
+      }
+    }
+    
+
+    textInput.addEventListener('input', updateTextStyle);
+    
+fontInput.addEventListener('change', updateTextStyle);
+customFont.addEventListener('input', updateTextStyle);
+fontSizeInput.addEventListener('input', updateTextStyle);
+
+colorOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    colorOptions.forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    draggableText.style.color = this.dataset.color;
+    customColor.value = this.dataset.color;
+  });
+});
+
+
+customColor.addEventListener('input', function() {
+  colorOptions.forEach(opt => opt.classList.remove('active'));
+  draggableText.style.color = this.value;
+});
+
+
+effectButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    this.classList.toggle('active');
+    updateTextStyle();
+  });
+});
+
+
+backgroundOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    backgroundOptions.forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    updateTextStyle();
+  });
+});
+
+
+let offsetX, offsetY;
+let isDragging = false;
+
+draggableText.addEventListener('mousedown', function(e) {
+  isDragging = true;
+  const rect = draggableText.getBoundingClientRect();
+  offsetX = e.clientX - rect.left;
+  offsetY = e.clientY - rect.top;
+  draggableText.style.cursor = 'grabbing';
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (!isDragging) return;
+  const containerRect = editorContainer.getBoundingClientRect();
+  let x = e.clientX - containerRect.left - offsetX;
+  let y = e.clientY - containerRect.top - offsetY;
+  
+
+  x = Math.max(0, Math.min(x, containerRect.width - draggableText.offsetWidth));
+  y = Math.max(0, Math.min(y, containerRect.height - draggableText.offsetHeight));
+  
+  draggableText.style.left = x + 'px';
+  draggableText.style.top = y + 'px';
+});
+
+document.addEventListener('mouseup', function() {
+  if (isDragging) {
+    isDragging = false;
+    draggableText.style.cursor = 'move';
+  }
+});
+
+
+downloadButton.addEventListener('click', function() {
+  if (!uploadedImage.src) {
+    alert('Please upload an image first.');
+    return;
+  }
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = imgOgWidth;
+  canvas.height = imgOgHieght;
+  
+  ctx.drawImage(uploadedImage, 0, 0, imgOgWidth, imgOgHieght);
+  
+  const scaleFactor = imgOgWidth / uploadedImage.width;
+
+  ctx.save();
+  ctx.scale(scaleFactor, scaleFactor);
+  const textRect = draggableText.getBoundingClientRect();
+  const containerRect = editorContainer.getBoundingClientRect();
+  ctx.font = getComputedStyle(draggableText).font;
+  ctx.fillStyle = getComputedStyle(draggableText).color;
+  ctx.textBaseline = 'top';
+  
+  if (effectButtons[0].classList.contains('active')) ctx.font = 'bold ' + ctx.font;
+  if (effectButtons[1].classList.contains('active')) ctx.font = 'italic ' + ctx.font;
+  
+  const activeBg = document.querySelector('.background-option.active').dataset.bg;
+  if (activeBg !== 'none') {
+    ctx.save();
+    if (activeBg === 'solid') {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    } else if (activeBg === 'gradient') {
+      const gradient = ctx.createLinearGradient(0, 0, textRect.width, textRect.height);
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+      gradient.addColorStop(1, 'rgba(64, 64, 64, 0.7)');
+      ctx.fillStyle = gradient;
+    }
+    ctx.fillRect(
+      (textRect.left - containerRect.left) / scaleFactor,
+      (textRect.top - containerRect.top) / scaleFactor,
+      textRect.width / scaleFactor,
+      textRect.height / scaleFactor
+    );
+    ctx.restore();
+  }
+  
+  ctx.fillText(
+    draggableText.textContent,
+    (textRect.left - containerRect.left) / scaleFactor,
+    (textRect.top - containerRect.top) / scaleFactor
+  );
+  
+  if (effectButtons[2].classList.contains('active')) {
+    ctx.beginPath();
+    ctx.moveTo((textRect.left - containerRect.left) / scaleFactor, (textRect.bottom - containerRect.top) / scaleFactor);
+    ctx.lineTo((textRect.right - containerRect.left) / scaleFactor, (textRect.bottom - containerRect.top) / scaleFactor);
+    ctx.strokeStyle = getComputedStyle(draggableText).color;
+    ctx.stroke();
+  }
+  ctx.restore();
+  
+  canvas.toBlob(function(blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'betterimage.png';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  });
+});
+updateTextStyle();
+  </script>
+</body>
+</html>
